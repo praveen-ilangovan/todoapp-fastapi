@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "fastapi-udemy-course"
+version = "0.1.0"
+description = ""
+authors = ["Praveen Ilangovan <praveen.ilangovan@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["standard"], version = "^0.115.4"}
+
+[tool.poetry.scripts]
+proj01 = "fastapi_udemy_course.proj01_books.main:main"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

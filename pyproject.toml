@@ -11,6 +11,7 @@ fastapi = {extras = ["standard"], version = "^0.115.4"}
 
 [tool.poetry.scripts]
 proj01 = "fastapi_udemy_course.proj01_books.main:main"
+proj02 = "fastapi_udemy_course.proj02_books.main:main"
 
 
 [build-system]

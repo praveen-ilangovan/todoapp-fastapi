@@ -2,11 +2,11 @@
 """
 
 # Project specific imports
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class Book(BaseModel):
-    id: int
+    id: int = Field(gt=0)
     title: str
     author: str
     description: str
-    rating: int
+    rating: int = Field(gt=0, lt=6)

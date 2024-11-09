@@ -25,12 +25,12 @@ app = FastAPI()
 # Database
 #-----------------------------------------------------------------------------#
 
-BOOKS = [Book(title='The Alchemist', author='Paulo Coelho', description='Great Book', rating=4),
-         Book(title='My Name is Red', author='Orhan Pamuk', description='One of the best books', rating=4),
-         Book(title='Jurassic Park', author='Michael Crichton', description='Amazing Book', rating=3),
-         Book(title='1984', author='George Orwell', description='Best SciFi', rating=3),
-         Book(title='Animal Farm', author='George Orwell', description='Great Book', rating=4),
-         Book(title='The Pilgrimage', author='Paulo Coelho', description='Great Book', rating=2)]
+BOOKS = [Book(title='The Alchemist', author='Paulo Coelho', description='Great Book', published=1988, rating=4),
+         Book(title='My Name is Red', author='Orhan Pamuk', description='One of the best books', published=1998, rating=4),
+         Book(title='Jurassic Park', author='Michael Crichton', description='Amazing Book', published=1990, rating=3),
+         Book(title='1984', author='George Orwell', description='Best SciFi', published=1949, rating=3),
+         Book(title='Animal Farm', author='George Orwell', description='Great Book', published=1945, rating=4),
+         Book(title='The Pilgrimage', author='Paulo Coelho', description='Great Book', published=1987, rating=2)]
 
 #-----------------------------------------------------------------------------#
 # Utils
@@ -53,10 +53,13 @@ async def create_book(book: Book) -> Book:
     return BOOKS[-1]
 
 @app.get("/books", tags=['Books'])
-async def get_all_books(rating: Optional[int] = None) -> list[Book]:
-    if rating == None:
+async def get_all_books(rating: Optional[int] = None, published: Optional[int] = None) -> list[Book]:
+    if rating:
+        return [book for book in BOOKS if book.rating == rating]
+    elif published:
+        return [book for book in BOOKS if book.published == published]
+    else:
         return BOOKS
-    return [book for book in BOOKS if book.rating == rating]
 
 @app.get("/books/{id}", tags=['Books'])
 async def get_book(id: str) -> Optional[Book]:

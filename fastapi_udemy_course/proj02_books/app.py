@@ -34,6 +34,11 @@ BOOKS = [Book(id=1, title='The Alchemist', author='Paulo Coelho', description='G
 async def index() -> dict[str, str]:
     return {"message": "FastAPI udemy tutorial - Books2"}
 
+@app.post("/books", tags=['Books'], response_model=Book)
+async def create_book(book: Book) -> Book:
+    BOOKS.append(book)
+    return BOOKS[-1]
+
 @app.get("/books", tags=['Books'])
 async def get_all_books() -> list[Book]:
     return BOOKS

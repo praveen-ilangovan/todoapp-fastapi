@@ -6,7 +6,7 @@
 from typing import Annotated, Optional
 
 # Project specific imports
-from fastapi import FastAPI, Depends, status, HTTPException, Path
+from fastapi import FastAPI, Depends, status, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
@@ -60,7 +60,8 @@ async def create_todoitem(db: DB_DEPENDENCY, item: TodoRequest):
     db.commit()
 
 @app.get("/todos", tags=['Todos'])
-async def get_todos(db: DB_DEPENDENCY, complete: Optional[bool] = None, priority: Optional[int] = None):
+async def get_todos(db: DB_DEPENDENCY, complete: Optional[bool] = None,
+                    priority: Optional[int] = Query(gt=0, lt=6, default=None)):
     if complete is not None:
         res = db.query(model.Todos).filter(model.Todos.complete == complete).all()
         if res:
@@ -82,3 +83,28 @@ async def get_todo_item(db: DB_DEPENDENCY, id: int = Path(gt=0)):
         return item
     
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'No item with {id} found')
+
+@app.put("/todos/{id}", tags=['Todos'], status_code=status.HTTP_204_NO_CONTENT)
+async def update_todoitem(db: DB_DEPENDENCY,
+                          item: TodoRequest,
+                          id: int = Path(gt=0)):
+    todoitem = db.query(model.Todos).filter(model.Todos.id == id).first()
+    if not todoitem:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'No item with {id} found')
+    
+    todoitem.title = item.title
+    todoitem.description = item.description
+    todoitem.priority = item.priority
+    todoitem.complete = item.complete
+
+    db.add(todoitem)
+    db.commit()
+
+@app.delete("/todos/{id}", tags=['Todos'], status_code=status.HTTP_204_NO_CONTENT)
+async def delete_todoitem(db: DB_DEPENDENCY, id: int = Path(gt=0)):
+    todoitem = db.query(model.Todos).filter(model.Todos.id == id).first()
+    if not todoitem:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'No item with {id} found')
+    
+    db.query(model.Todos).filter(model.Todos.id == id).delete()
+    db.commit()

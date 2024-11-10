@@ -5,7 +5,7 @@
 from typing import Optional, TYPE_CHECKING, Union
 
 # Project specific imports
-from fastapi import FastAPI, status, HTTPException, Body
+from fastapi import FastAPI, status, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 
 
@@ -47,34 +47,47 @@ def encode_input(data) -> dict[str, Optional[Union[str, int]]]:
 async def index() -> dict[str, str]:
     return {"message": "FastAPI udemy tutorial - Books2"}
 
-@app.post("/books", tags=['Books'], response_model=Book)
+@app.post("/books", tags=['Books'], response_model=Book, status_code=status.HTTP_201_CREATED)
 async def create_book(book: Book) -> Book:
     BOOKS.append(book)
     return BOOKS[-1]
 
-@app.get("/books", tags=['Books'])
-async def get_all_books(rating: Optional[int] = None, published: Optional[int] = None) -> list[Book]:
+@app.get("/books", tags=['Books'], status_code=status.HTTP_200_OK)
+async def get_all_books(rating: Optional[int] = Query(default=None, gt=0, lt=6),
+                        published: Optional[int] = None) -> list[Book]:
     if rating:
-        return [book for book in BOOKS if book.rating == rating]
+        result = [book for book in BOOKS if book.rating == rating]
+        if result:
+            return result
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail='No books found')
     elif published:
-        return [book for book in BOOKS if book.published == published]
+        result = [book for book in BOOKS if book.published == published]
+        if result:
+            return result
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail='No books found')
     else:
         return BOOKS
 
-@app.get("/books/{id}", tags=['Books'])
+@app.get("/books/{id}", tags=['Books'], status_code=status.HTTP_200_OK)
 async def get_book(id: str) -> Optional[Book]:
     for book in BOOKS:
         if str(book.id) == id:
             return book
+    raise HTTPException(status.HTTP_404_NOT_FOUND, detail='No book found')
 
-@app.put("/books/{id}", tags=['Books'], response_model=UpdateBook)
-async def update_book(id: str, data_to_update:UpdateBook)-> Book:
+@app.put("/books/{id}", tags=['Books'], status_code=status.HTTP_204_NO_CONTENT)
+async def update_book(id: str, data_to_update:UpdateBook):
+    updated = False
     for index, book in enumerate(BOOKS):
         if str(book.id) == id:
             # cleanup dict
             data = encode_input( data_to_update.model_dump() )
             BOOKS[index] = book.model_copy(update=data)
-            return BOOKS[index]                
+            updated = True
+            break
+
+    if not updated:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail='No book found')      
 
 @app.delete("/books/{id}", tags=['Books'])
 async def delete_book(id: str):
@@ -82,3 +95,4 @@ async def delete_book(id: str):
         if str(book.id) == id:
             del BOOKS[index]
             return
+    raise HTTPException(status.HTTP_404_NOT_FOUND, detail='No book found')

@@ -6,8 +6,8 @@
 from fastapi import FastAPI
 
 # Local imports
-from .database import ENGINE
-from . import model
+from .database.database import ENGINE
+from .database import model
 from .routers import auth, todos
 
 #-----------------------------------------------------------------------------#

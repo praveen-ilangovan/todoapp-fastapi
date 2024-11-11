@@ -10,8 +10,8 @@ from fastapi import APIRouter, status, Query, HTTPException, Path
 from pydantic import BaseModel, Field
 
 # Local imports
-from ..database import DB_DEPENDENCY
-from ..model import Todos
+from ..db_init import DB_DEPENDENCY
+from ..database.model import Todos
 
 router = APIRouter()
 

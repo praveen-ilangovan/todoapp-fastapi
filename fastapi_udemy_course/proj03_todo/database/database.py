@@ -11,7 +11,7 @@ from fastapi import Depends
 #-----------------------------------------------------------------------------#
 # Setup
 #-----------------------------------------------------------------------------#
-SQLALCHEMY_DATABASE_URL = "sqlite:///./todos.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./todosapp.db"
 ENGINE = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
 SESSIONLOCAL = sessionmaker(autoflush=False, bind=ENGINE)
 BASE = declarative_base()

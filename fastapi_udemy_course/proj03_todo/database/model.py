@@ -2,10 +2,21 @@
 """
 
 # Project specific imports
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 
 # Local imports
 from .database import BASE
+
+class Users(BASE):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, index=True)
+    email_address = Column(String, unique=True)
+    first_name = Column(String)
+    last_name = Column(String)
+    hashed_password = Column(String)
+    active = Column(Boolean, default=False)
+    role = Column(String)
 
 class Todos(BASE):
     __tablename__ = 'todos'
@@ -15,4 +26,4 @@ class Todos(BASE):
     description = Column(String)
     priority = Column(Integer)
     complete = Column(Boolean, default=False)
-
+    owner_id = Column(Integer, ForeignKey("users.id"))

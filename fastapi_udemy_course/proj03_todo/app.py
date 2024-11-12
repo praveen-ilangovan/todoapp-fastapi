@@ -8,7 +8,7 @@ from fastapi import FastAPI
 # Local imports
 from .database.database import ENGINE
 from .database import model
-from .routers import auth, todos
+from .routers import admin, auth, todos, user
 
 #-----------------------------------------------------------------------------#
 # Database
@@ -21,6 +21,10 @@ model.BASE.metadata.create_all(bind=ENGINE)
 app = FastAPI()
 app.include_router(auth.router, tags=["Auth"], prefix="/auth")
 app.include_router(todos.router, tags=["Todos"], prefix="/todos")
+app.include_router(admin.router, tags=["Admin"], prefix="/admin")
+app.include_router(user.router, tags=["Me"], prefix="/me")
+
+
 
 #-----------------------------------------------------------------------------#
 # Routes

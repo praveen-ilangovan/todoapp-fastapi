@@ -73,10 +73,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email_address = payload.get('sub')
         id = payload.get('id')
-        if email_address is None or id is None:
+        role = payload.get('role')
+        if email_address is None or id is None or role is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
         
-        return {'email_address': email_address, 'id': id}
+        return {'email_address': email_address, 'id': id, 'role': role}
 
     except jwt.exceptions.InvalidTokenError as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
@@ -112,7 +113,7 @@ async def signin_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email_address, "id": user.id}, expires_delta=access_token_expires
+        data={"sub": user.email_address, "id": user.id, "role": user.role}, expires_delta=access_token_expires
     )
 
     return Token(access_token=access_token, token_type="bearer")

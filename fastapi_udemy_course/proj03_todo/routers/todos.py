@@ -12,6 +12,8 @@ from pydantic import BaseModel, Field
 # Local imports
 from ..db_init import DB_DEPENDENCY
 from ..database.model import Todos
+from .auth import USER_DEPENDENCY
+
 
 router = APIRouter()
 
@@ -28,41 +30,56 @@ class TodoRequest(BaseModel):
 # Routes
 #-----------------------------------------------------------------------------#
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_todoitem(db: DB_DEPENDENCY, item: TodoRequest):
-    new_item = Todos(**item.model_dump())
+async def create_todoitem(user: USER_DEPENDENCY, db: DB_DEPENDENCY, item: TodoRequest):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")
+
+    new_item = Todos(**item.model_dump(), owner_id=user.get('id'))
     db.add(new_item)
     db.commit()
 
 @router.get("/")
-async def get_todos(db: DB_DEPENDENCY, complete: Optional[bool] = None,
+async def get_todos(user: USER_DEPENDENCY,
+                    db: DB_DEPENDENCY,
+                    complete: Optional[bool] = None,
                     priority: Optional[int] = Query(gt=0, lt=6, default=None)):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")
+
     if complete is not None:
-        res = db.query(Todos).filter(Todos.complete == complete).all()
+        res = db.query(Todos).filter(Todos.owner_id == user.get('id'), Todos.complete == complete).all()
         if res:
             return res
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No items found')
 
     if priority is not None:
-        res = db.query(Todos).filter(Todos.priority == priority).all()
+        res = db.query(Todos).filter(Todos.owner_id == user.get('id'), Todos.priority == priority).all()
         if res:
             return res
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No items found')
 
-    return db.query(Todos).all()
+    return db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
-async def get_todo_item(db: DB_DEPENDENCY, id: int = Path(gt=0)):
-    item = db.query(Todos).filter(Todos.id == id).first()
+async def get_todo_item(user: USER_DEPENDENCY, db: DB_DEPENDENCY, id: int = Path(gt=0)):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")
+
+    item = db.query(Todos).filter(Todos.owner_id == user.get('id'), Todos.id == id).first()
     if item:
         return item
     
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'No item with {id} found')
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'No item with id:{id} found')
 
 @router.put("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_todoitem(db: DB_DEPENDENCY,
+async def update_todoitem(user: USER_DEPENDENCY,
+                          db: DB_DEPENDENCY,
                           item: TodoRequest,
                           id: int = Path(gt=0)):
-    todoitem = db.query(Todos).filter(Todos.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")
+
+    todoitem = db.query(Todos).filter(Todos.owner_id == user.get('id'),Todos.id == id).first()
     if not todoitem:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'No item with {id} found')
     
@@ -75,8 +92,12 @@ async def update_todoitem(db: DB_DEPENDENCY,
     db.commit()
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_todoitem(db: DB_DEPENDENCY, id: int = Path(gt=0)):
-    todoitem = db.query(Todos).filter(Todos.id == id).first()
+async def delete_todoitem(user: USER_DEPENDENCY,
+                          db: DB_DEPENDENCY, id: int = Path(gt=0)):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")
+
+    todoitem = db.query(Todos).filter(Todos.owner_id == user.get('id'),Todos.id == id).first()
     if not todoitem:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'No item with {id} found')
     

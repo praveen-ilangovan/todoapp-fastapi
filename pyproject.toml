@@ -11,6 +11,8 @@ fastapi = {extras = ["standard"], version = "^0.115.4"}
 sqlalchemy = "^2.0.36"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pyjwt = "^2.9.0"
+python-dotenv = "^1.0.1"
+psycopg2-binary = "^2.9.10"
 
 [tool.poetry.scripts]
 proj01 = "fastapi_udemy_course.proj01_books.main:main"

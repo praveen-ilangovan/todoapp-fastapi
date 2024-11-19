@@ -23,6 +23,11 @@ proj03 = "fastapi_udemy_course.proj03_todo.main:main"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 httpx = "^0.27.2"
+pytest-env = "^1.1.5"
+
+[tool.pytest_env]
+USE_POSTGRES='0'
+DB_SQLITE="sqlite:///./test_todosapp.db"
 
 [build-system]
 requires = ["poetry-core"]

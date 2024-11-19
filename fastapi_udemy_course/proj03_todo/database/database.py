@@ -32,6 +32,5 @@ else:
     SQLALCHEMY_DATABASE_URL = os.getenv("DB_SQLITE")
     ENGINE = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
 
-print(SQLALCHEMY_DATABASE_URL)
 SESSIONLOCAL = sessionmaker(autoflush=False, bind=ENGINE)
 BASE = declarative_base()

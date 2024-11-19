@@ -20,6 +20,10 @@ proj01 = "fastapi_udemy_course.proj01_books.main:main"
 proj02 = "fastapi_udemy_course.proj02_books.main:main"
 proj03 = "fastapi_udemy_course.proj03_todo.main:main"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+httpx = "^0.27.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

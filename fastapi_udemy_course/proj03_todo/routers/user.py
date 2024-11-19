@@ -21,6 +21,11 @@ class UpdatePassword(BaseModel):
     current_password: str
     new_password: str
 
+class UpdateUserData(BaseModel):
+    first_name: str
+    last_name: str
+    phone_number: str
+
 #-----------------------------------------------------------------------------#
 # Routes
 #-----------------------------------------------------------------------------#
@@ -34,6 +39,23 @@ async def get_user(user: USER_DEPENDENCY, db: DB_DEPENDENCY):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid user")
     
     return user_data
+
+@router.put("/", status_code=status.HTTP_201_CREATED)
+async def update_user(user: USER_DEPENDENCY, db: DB_DEPENDENCY, new_user_data: UpdateUserData):
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")
+    
+    user_data = db.query(Users).filter(Users.id == user.get('id')).first()
+    if not user_data:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid user")
+    
+    # Update the user's password
+    user_data.first_name = new_user_data.first_name
+    user_data.last_name = new_user_data.last_name
+    user_data.phone_number = new_user_data.phone_number
+
+    db.add(user_data)
+    db.commit()
 
 @router.post("/update_password", status_code=status.HTTP_201_CREATED)
 async def update_password(user: USER_DEPENDENCY, db: DB_DEPENDENCY, update_data: UpdatePassword):

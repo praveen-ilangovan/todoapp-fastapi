@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 # LOAD env file
 load_dotenv()
 
-USE_POSTGRES = True
+USE_POSTGRES = os.getenv("USE_POSTGRES", "0") == "1"
 
 #-----------------------------------------------------------------------------#
 # Setup
@@ -29,8 +29,9 @@ if USE_POSTGRES:
         )
     ENGINE = create_engine(SQLALCHEMY_DATABASE_URL)
 else:
-    SQLALCHEMY_DATABASE_URL = "sqlite:///./todosapp.db"
+    SQLALCHEMY_DATABASE_URL = os.getenv("DB_SQLITE")
     ENGINE = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
 
+print(SQLALCHEMY_DATABASE_URL)
 SESSIONLOCAL = sessionmaker(autoflush=False, bind=ENGINE)
 BASE = declarative_base()

@@ -40,7 +40,7 @@ async def get_user(user: USER_DEPENDENCY, db: DB_DEPENDENCY):
     
     return user_data
 
-@router.put("/", status_code=status.HTTP_201_CREATED)
+@router.put("/", status_code=status.HTTP_204_NO_CONTENT)
 async def update_user(user: USER_DEPENDENCY, db: DB_DEPENDENCY, new_user_data: UpdateUserData):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")
@@ -57,7 +57,7 @@ async def update_user(user: USER_DEPENDENCY, db: DB_DEPENDENCY, new_user_data: U
     db.add(user_data)
     db.commit()
 
-@router.post("/update_password", status_code=status.HTTP_201_CREATED)
+@router.post("/update_password", status_code=status.HTTP_204_NO_CONTENT)
 async def update_password(user: USER_DEPENDENCY, db: DB_DEPENDENCY, update_data: UpdatePassword):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")

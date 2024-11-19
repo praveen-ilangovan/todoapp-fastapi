@@ -1,5 +1,5 @@
 """
-Test todos route
+Test admin route
 """
 
 from fastapi import status
@@ -20,3 +20,7 @@ def test_delete_another_user_item(client):
 
     response = client.delete(f"/admin/{id_to_delete}")
     assert response.status_code == status.HTTP_204_NO_CONTENT
+
+def test_delete_another_user_non_existent_item(client):
+    response = client.delete("/admin/999")
+    assert response.status_code == status.HTTP_404_NOT_FOUND

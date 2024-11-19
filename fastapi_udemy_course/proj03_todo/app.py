@@ -22,7 +22,7 @@ app = FastAPI()
 app.include_router(auth.router, tags=["Auth"], prefix="/auth")
 app.include_router(todos.router, tags=["Todos"], prefix="/todos")
 app.include_router(admin.router, tags=["Admin"], prefix="/admin")
-app.include_router(user.router, tags=["Me"], prefix="/me1")
+app.include_router(user.router, tags=["Me"], prefix="/me")
 
 
 

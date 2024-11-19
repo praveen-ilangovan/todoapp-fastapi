@@ -23,7 +23,7 @@ async def get_all_todos(user: USER_DEPENDENCY, db: DB_DEPENDENCY):
     
     return db.query(Todos).all()
 
-@router.delete("/{id}", status_code=status.HTTP_200_OK)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_todoitem(user: USER_DEPENDENCY, db: DB_DEPENDENCY,  id: int = Path(gt=0)):
     if not user or user.get('role') != 'admin':
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authorized")

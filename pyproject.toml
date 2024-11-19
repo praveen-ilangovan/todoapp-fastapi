@@ -24,6 +24,10 @@ proj03 = "fastapi_udemy_course.proj03_todo.main:main"
 pytest = "^8.3.3"
 httpx = "^0.27.2"
 pytest-env = "^1.1.5"
+pytest-asyncio = "^0.24.0"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "session"
 
 [tool.pytest_env]
 USE_POSTGRES='0'

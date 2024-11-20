@@ -8,7 +8,7 @@ from datetime import timedelta, datetime, timezone
 import logging
 
 # Project specific imports
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, status, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from pydantic import BaseModel, Field
 from sqlalchemy.exc import IntegrityError
@@ -18,6 +18,7 @@ import jwt
 from ..database.model import Users
 from ..hashing import Hasher
 from ..db_init import DB_DEPENDENCY
+from ..templating import TEMPLATES
 
 # Suppress the passlib warning. 
 logging.getLogger('passlib').setLevel(logging.ERROR)
@@ -81,6 +82,13 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
     except jwt.exceptions.InvalidTokenError as err:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+    
+#-----------------------------------------------------------------------------#
+# Pages
+#-----------------------------------------------------------------------------#
+@router.get("/login-page")
+async def show_login_page(request: Request):
+    return TEMPLATES.TemplateResponse("login.html", {'request': request})
 
 #-----------------------------------------------------------------------------#
 # Routes

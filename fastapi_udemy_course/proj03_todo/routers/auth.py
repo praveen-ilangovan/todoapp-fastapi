@@ -91,7 +91,7 @@ async def show_login_page(request: Request):
     return TEMPLATES.TemplateResponse("login.html", {'request': request})
 
 @router.get("/register-page")
-async def show_login_page(request: Request):
+async def show_register_page(request: Request):
     return TEMPLATES.TemplateResponse("register.html", {'request': request})
 
 #-----------------------------------------------------------------------------#

@@ -6,13 +6,15 @@
 from typing import Optional
 
 # Project specific imports
-from fastapi import APIRouter, status, Query, HTTPException, Path
+from fastapi import APIRouter, status, Query, HTTPException, Path, Request
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
 # Local imports
 from ..db_init import DB_DEPENDENCY
 from ..database.model import Todos
-from .auth import USER_DEPENDENCY
+from .auth import USER_DEPENDENCY, get_current_user
+from ..templating import TEMPLATES
 
 
 router = APIRouter()
@@ -25,6 +27,26 @@ class TodoRequest(BaseModel):
     description: str
     priority: int = Field(gt=0, lt=6)
     complete: bool = False
+
+#-----------------------------------------------------------------------------#
+# Pages
+#-----------------------------------------------------------------------------#
+def redirect_to_login():
+    redirect_response = RedirectResponse(url='/auth/login-page', status_code=status.HTTP_302_FOUND)
+    redirect_response.delete_cookie(key='access_token')
+    return redirect_response
+
+@router.get("/todo-page")
+async def show_todo_page(request: Request, db: DB_DEPENDENCY):
+    try:
+        user  = await get_current_user( request.cookies.get("access_token") )
+        if user is None:
+            return redirect_to_login()
+
+        todos = db.query(Todos).filter(Todos.owner_id == user.get('id')).all()
+        return TEMPLATES.TemplateResponse("todo.html", {'request': request, 'todos': todos, 'user': user})
+    except HTTPException as err:
+        return redirect_to_login()
 
 #-----------------------------------------------------------------------------#
 # Routes

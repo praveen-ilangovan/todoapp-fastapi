@@ -11,17 +11,17 @@
     
                     <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign in</p>
 
-                    <form>
+                    <form id="loginForm">
                         <!-- Email input -->
                         <div data-mdb-input-init class="form-outline mb-4">
-                            <input type="email" id="form2Example1" class="form-control" autocomplete="email" required/>
-                            <label class="form-label" for="form2Example1">Email address</label>
+                            <input type="email" id="email_address" name="username" class="form-control" autocomplete="email" required/>
+                            <label class="form-label" for="email_address">Email address</label>
                         </div>
                         
                         <!-- Password input -->
                         <div data-mdb-input-init class="form-outline mb-4">
-                            <input type="password" id="form2Example2" class="form-control" autocomplete="current-password" required/>
-                            <label class="form-label" for="form2Example2">Password</label>
+                            <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required/>
+                            <label class="form-label" for="password">Password</label>
                         </div>
                         
                         <!-- 2 column grid layout for inline styling -->
@@ -41,7 +41,7 @@
                         </div>
                         
                         <!-- Submit button -->
-                        <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign in</button>
+                        <button  type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign in</button>
                         
                         <!-- Register buttons -->
                         <div class="text-center">

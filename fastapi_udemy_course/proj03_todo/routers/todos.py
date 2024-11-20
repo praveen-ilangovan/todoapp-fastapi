@@ -47,6 +47,29 @@ async def show_todo_page(request: Request, db: DB_DEPENDENCY):
         return TEMPLATES.TemplateResponse("todo.html", {'request': request, 'todos': todos, 'user': user})
     except HTTPException as err:
         return redirect_to_login()
+    
+@router.get("/add-todo-page")
+async def show_add_todo_page(request: Request):
+    try:
+        user  = await get_current_user( request.cookies.get("access_token") )
+        if user is None:
+            return redirect_to_login()
+
+        return TEMPLATES.TemplateResponse("add-todo.html", {'request': request, 'user': user})
+    except HTTPException as err:
+        return redirect_to_login()
+
+@router.get("/edit-todo-page/{id}")
+async def show_add_todo_page(request: Request, db: DB_DEPENDENCY, id: int = Path(gt=0)):
+    try:
+        user  = await get_current_user( request.cookies.get("access_token") )
+        if user is None:
+            return redirect_to_login()
+        
+        todo = db.query(Todos).filter(Todos.owner_id == user.get('id'), Todos.id == id).first()
+        return TEMPLATES.TemplateResponse("edit-todo.html", {'request': request, 'todo': todo, 'user': user})
+    except HTTPException as err:
+        return redirect_to_login()
 
 #-----------------------------------------------------------------------------#
 # Routes

@@ -3,7 +3,7 @@
 
 A full stack todo application written using FastAPI, Sqlite and Jinja with OAuth for authentication and authorization. 
 
-[Try it out](https://todoapp-fastapi-bmrh.onrender.com)
+[Try it out](https://todoapp-fastapi-bmrh.onrender.com/auth/login-page)
 
 ## Udemy
  - [FastAPI course](https://www.udemy.com/course/fastapi-the-complete-course/)

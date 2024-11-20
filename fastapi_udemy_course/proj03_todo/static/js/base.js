@@ -175,18 +175,16 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            if (data.password !== data.password2) {
+            if (data.password !== data.repeat_password) {
                 alert("Passwords do not match");
                 return;
             }
 
             const payload = {
-                email: data.email,
-                username: data.username,
-                first_name: data.firstname,
-                last_name: data.lastname,
-                role: data.role,
-                phone_number: data.phone_number,
+                email_address: data.email_address,
+                first_name: data.first_name,
+                last_name: data.last_name,
+                role: "admin",
                 password: data.password
             };
 
